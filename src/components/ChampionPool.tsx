@@ -1,4 +1,10 @@
-import React, { useState } from 'react'
+import {
+  ChangeEventHandler,
+  FC,
+  FormEventHandler,
+  Fragment,
+  useState,
+} from 'react'
 import { Champion } from '../types'
 
 type ChampionPoolProps = {
@@ -6,23 +12,19 @@ type ChampionPoolProps = {
   onChampionSubmit: (championId: Champion['id']) => void
 }
 
-const ChampionPool: React.FC<ChampionPoolProps> = ({
+const ChampionPool: FC<ChampionPoolProps> = ({
   champions,
   onChampionSubmit,
 }) => {
-  const [currentChampionId, setCurrentChampionId] = useState<Champion['id']>(
-    champions[0].id
-  )
+  const [currentChampionId, setCurrentChampionId] = useState<Champion['id']>()
 
-  const handleChampionChange: React.ChangeEventHandler<HTMLInputElement> = (
-    e
-  ) => {
+  const handleChampionChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setCurrentChampionId(e.target.value)
   }
 
-  const handleChampionSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleChampionSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
-    onChampionSubmit(currentChampionId)
+    currentChampionId && onChampionSubmit(currentChampionId)
   }
 
   return (
@@ -30,17 +32,16 @@ const ChampionPool: React.FC<ChampionPoolProps> = ({
       <fieldset>
         <legend>Pick a Champion!</legend>
         {champions.map((champion) => (
-          <React.Fragment key={champion.id}>
+          <Fragment key={champion.id}>
             <label htmlFor={champion.id}>Champion {champion.id}</label>
             <input
               id={champion.id}
               type="radio"
               value={champion.id}
               name="champions"
-              defaultChecked={champion.id === champions[0].id}
               onChange={handleChampionChange}
             />
-          </React.Fragment>
+          </Fragment>
         ))}
         <br />
         <button type="submit">Lock in</button>
