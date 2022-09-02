@@ -1,16 +1,23 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
+import { champions } from '../data'
 import { Champion } from '../types'
 
 type ChampionPicksProps = {
-  champions: Champion[]
+  championIds: Champion['id'][]
 }
 
-const ChampionPicks: FC<ChampionPicksProps> = ({ champions }) => {
+const ChampionPicks: FC<ChampionPicksProps> = ({ championIds }) => {
+  const pickedChampions = useMemo(() => {
+    return championIds.map(
+      (championId) => champions.filter((champion) => champion.id === championId)[0]
+    )
+  }, [championIds])
+
   return (
     <>
       <h2>Picks</h2>
-      {champions.map((champion) => (
-        <div key={champion.id}>{champion.id}</div>
+      {pickedChampions.map((pickedChampion) => (
+        <div key={pickedChampion.id}>{pickedChampion.id}</div>
       ))}
     </>
   )

@@ -1,77 +1,44 @@
 import { useState } from 'react'
+import { champions } from '../data'
 import { Champion } from '../types'
 import ChampionPicks from './ChampionPicks'
 import ChampionPool from './ChampionPool'
 
 const ChampionPickBanAndPoolWrapper = () => {
-  const [availableChampions, setAvailableChampions] = useState<Champion[]>([
-    {
-      id: '1',
-    },
-    {
-      id: '2',
-    },
-    {
-      id: '3',
-    },
-    {
-      id: '4',
-    },
-    {
-      id: '5',
-    },
-    {
-      id: '6',
-    },
-    {
-      id: '7',
-    },
-    {
-      id: '8',
-    },
-    {
-      id: '9',
-    },
-    {
-      id: '10',
-    },
-  ])
-  const [pickedChampions, setPickedChampions] = useState<Champion[] | []>([])
-  const [opponentPickedChampions, setOpponentPickedChampions] = useState<
-    Champion[] | []
-  >([])
+  const [pickedChampionIds, setPickedChampionIds] = useState<Champion['id'][]>([])
+  const [opponentPickedChampionIds, setOpponentPickedChampionIds] = useState<Champion['id'][]>([])
+  const [availableChampionIds, setAvailableChampionIds] = useState<Champion['id'][]>(
+    champions.map((champion) => champion.id)
+  )
 
-  const removeAvailableChampion = (championId: Champion['id']) => {
-    const updatedAvailableChampions = availableChampions.filter(
-      (availableChampion) => availableChampion.id !== championId
+  const handleChampionSubmit = (championId: Champion['id']) => {
+    setPickedChampionIds([...pickedChampionIds, championId])
+
+    const updatedAvailableChampionIds = availableChampionIds.filter(
+      (availableChampionId) => availableChampionId !== championId
     )
-    setAvailableChampions(updatedAvailableChampions)
-  }
 
-  const addPickedChampion = (championId: Champion['id']) => {
-    const pickedChampion = availableChampions.find(
-      (availableChampion) => availableChampion.id === championId
+    const randomAvailableChampionIndex = Math.floor(
+      Math.random() * updatedAvailableChampionIds.length
     )
-    pickedChampion && setPickedChampions([...pickedChampions, pickedChampion])
-  }
+    const randomAvailableChampionId = updatedAvailableChampionIds[randomAvailableChampionIndex]
+    setOpponentPickedChampionIds([...opponentPickedChampionIds, randomAvailableChampionId])
 
-  const pickChampion = (championId: Champion['id']) => {
-    removeAvailableChampion(championId)
-    addPickedChampion(championId)
+    const furtherUpdatedAvailableChampionIds = updatedAvailableChampionIds.filter(
+      (updatedAvailableChampionId) => updatedAvailableChampionId !== randomAvailableChampionId
+    )
+    setAvailableChampionIds(furtherUpdatedAvailableChampionIds)
   }
 
   return (
     <>
-      {availableChampions.length > 0 ? (
-        <ChampionPool
-          champions={availableChampions}
-          onChampionSubmit={pickChampion}
-        />
+      {availableChampionIds.length > 0 ? (
+        <ChampionPool championIds={availableChampionIds} onChampionSubmit={handleChampionSubmit} />
       ) : (
         <div>No champions available.</div>
       )}
-      <ChampionPicks champions={pickedChampions} />
-      <ChampionPicks champions={opponentPickedChampions} />
+      <ChampionPicks championIds={pickedChampionIds} />
+      <ChampionPicks championIds={opponentPickedChampionIds} />
     </>
   )
 }
